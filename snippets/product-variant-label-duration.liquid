@@ -25,59 +25,33 @@
 {%- liquid
   assign variant_price = 0
   assign option_index = option.position | minus: 1
-  assign months = 0
-  assign days = 0
 
   comment
-    Extraction robuste du nombre de mois depuis la valeur
+    Extraction des mois et calcul des jours depuis la valeur du variant
     Supporte: "1 mois", "3 mois", "12 mois", "1M", "3M", "1 month", etc.
     Validation du format avant calcul
   endcomment
+  assign months = 0
+  assign days = 0
   assign value_string = value | downcase | strip
-  
-  comment
-    Méthode 1: Extraire le nombre depuis le début (format "1 mois", "3M", etc.)
-    On split par espace et on prend la première partie
-  endcomment
   assign value_parts = value_string | split: ' '
   assign first_part = value_parts[0]
-  
-  comment
-    Nettoyer first_part pour enlever les lettres communes (ex: "1m" -> "1", "3mois" -> "3")
-    On essaie plusieurs patterns de remplacement
-  endcomment
   assign cleaned_part = first_part | replace: 'm', '' | replace: 'mois', '' | replace: 'month', '' | replace: 'mo', '' | strip
   assign months = cleaned_part | plus: 0
 
-  comment
-    Méthode 2: Si échec, essayer d'extraire le premier caractère comme nombre
-    (fallback pour les formats simples comme "1", "3", "12")
-  endcomment
   if months == 0 or months < 1
     assign first_char = value_string | slice: 0, 1
     assign months = first_char | plus: 0
-    
-    comment
-      Si le premier caractère n'est pas un nombre, essayer les 2 premiers caractères
-      (pour gérer "12 mois" où on prend "12")
-    endcomment
     if months == 0
       assign first_two_chars = value_string | slice: 0, 2
       assign months = first_two_chars | plus: 0
     endif
   endif
 
-  comment
-    Validation: mois doit être entre 1 et 120 (10 ans max)
-    Si invalide, on met 0 pour éviter les calculs incorrects
-  endcomment
   if months < 1 or months > 120
     assign months = 0
   endif
 
-  comment
-    Calcul des jours (30 jours par mois) seulement si mois valide
-  endcomment
   if months > 0
     assign days = months | times: 30
   endif
@@ -108,6 +82,34 @@
     Utilisation de la locale pour l'internationalisation
   endcomment
   assign locale = request.locale.iso_code | default: shop.locale | default: 'fr-FR'
+
+  comment
+    Calcul du prix par jour côté serveur pour affichage initial
+    (visible avant que JavaScript ne charge - fallback pour le rendu initial)
+    IMPORTANT: Ce calcul garantit que le texte est visible au chargement de la page
+    Alpine.js prendra le relais pour le formatage précis une fois chargé
+  endcomment
+  assign price_per_day_text = ''
+  if variant_price > 0 and days > 0 and days != blank
+    comment
+      Calcul simple : prix en centimes / jours
+      Liquid ne gère pas bien les décimales, donc on utilise le filtre money de Shopify
+      pour un formatage approximatif mais visible
+    endcomment
+    assign price_per_day_cents = variant_price | divided_by: days
+    assign price_per_day_prefix = 'products.product.variant.price_per_day_prefix' | t
+    assign price_per_day_suffix = 'products.product.variant.price_per_day_suffix' | t
+
+    comment
+      Utiliser le filtre money pour formater le prix (approximatif mais visible)
+      Le filtre money inclut déjà le symbole de devise
+      Format: "X,XX €" - Alpine.js améliorera le formatage précis ensuite
+    endcomment
+    if price_per_day_cents > 0
+      assign price_per_day_formatted = price_per_day_cents | money
+      assign price_per_day_text = price_per_day_prefix | append: ' ' | append: price_per_day_formatted | append: ' ' | append: price_per_day_suffix
+    endif
+  endif
 -%}
 
 <label
@@ -142,7 +144,7 @@
         <span class="variant-discount-badge">-{{ discount_percentage }}%</span>
       {%- endif -%}
     {%- endunless -%}
-    <span class="variant-sub-text" x-text="pricePerDayText"></span>
+    <span class="variant-sub-text" x-text="pricePerDayText">{{ price_per_day_text }}</span>
   </span>
   {{ label_unavailable }}
 </label>
