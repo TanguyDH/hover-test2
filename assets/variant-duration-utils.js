@@ -12,27 +12,37 @@ window.VariantDurationUtils = {
    * @returns {string} Prix formaté par jour
    */
   calculatePricePerDay(priceInCents, days, currencySymbol, locale) {
-    if (!priceInCents || !days || days <= 0) {
-      return '0' + currencySymbol;
+    // Validation stricte - évite NaN, Infinity, et valeurs invalides
+    if (typeof priceInCents !== 'number' || isNaN(priceInCents) || priceInCents < 0) {
+      return '0' + (currencySymbol || '€');
+    }
+    
+    if (typeof days !== 'number' || isNaN(days) || days <= 0) {
+      return '0' + (currencySymbol || '€');
     }
 
     const pricePerDay = priceInCents / 100 / days;
     
+    // Vérifier que le résultat est valide
+    if (!isFinite(pricePerDay) || pricePerDay < 0) {
+      return '0' + (currencySymbol || '€');
+    }
+    
     try {
       // Utiliser toLocaleString pour le formatage internationalisé
       // Cela gère automatiquement les séparateurs décimaux selon la locale
-      const formatted = pricePerDay.toLocaleString(locale, {
+      const formatted = pricePerDay.toLocaleString(locale || 'fr-FR', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       });
       
-      return formatted + ' ' + currencySymbol;
+      return formatted + ' ' + (currencySymbol || '€');
     } catch (e) {
       // Fallback simple en cas d'erreur
       const formatted = pricePerDay.toFixed(2);
       // Adapter le séparateur décimal selon la locale (fr-FR utilise ',')
-      const separator = locale.startsWith('fr') ? ',' : '.';
-      return formatted.replace('.', separator) + ' ' + currencySymbol;
+      const separator = (locale || 'fr-FR').startsWith('fr') ? ',' : '.';
+      return formatted.replace('.', separator) + ' ' + (currencySymbol || '€');
     }
   },
 
@@ -99,13 +109,22 @@ function variantDurationLabel(config) {
      * Calculé automatiquement par Alpine.js au chargement
      */
     get pricePerDay() {
-      if (!this.days || this.days <= 0 || !this.price) {
+      // Validation stricte avant calcul
+      if (typeof this.price !== 'number' || isNaN(this.price) || this.price < 0) {
+        return '0' + this.currencySymbol;
+      }
+      
+      if (typeof this.days !== 'number' || isNaN(this.days) || this.days <= 0) {
         return '0' + this.currencySymbol;
       }
 
       if (!window.VariantDurationUtils) {
         // Fallback si le module n'est pas chargé
         const pricePerDay = (this.price / 100 / this.days).toFixed(2);
+        // Vérifier que le résultat est valide
+        if (!isFinite(parseFloat(pricePerDay))) {
+          return '0' + this.currencySymbol;
+        }
         const separator = this.locale.startsWith('fr') ? ',' : '.';
         return pricePerDay.replace('.', separator) + ' ' + this.currencySymbol;
       }
