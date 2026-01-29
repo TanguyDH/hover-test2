@@ -2,7 +2,7 @@ window.PriceUtils = {
   /**
    * Formate un prix formaté (ex: "35,00 €") en format simple sans décimales (ex: "35€")
    * @param {string} priceText - Le texte du prix formaté
-   * @returns {string} - Le prix formaté sans décimales avec le symbole €
+   * @returns {string} - Le prix formaté sans décimales avec le symbole de devise
    */
   formatPriceSimple(priceText) {
     if (!priceText) return '';
@@ -10,7 +10,8 @@ window.PriceUtils = {
     numberStr = numberStr.replace(',', '.');
     const parts = numberStr.split('.');
     const amount = parseInt(parts[0]);
-    return amount + '€';
+    const currencySymbol = window.Shopify?.currency?.symbol || '€';
+    return amount + currencySymbol;
   },
 
   /**

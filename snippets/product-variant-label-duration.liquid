@@ -41,14 +41,16 @@
   class="variant-card-label"
   data-price-per-day-prefix="{{ 'products.product.variant.price_per_day_prefix' | t }}"
   data-price-per-day-suffix="{{ 'products.product.variant.price_per_day_suffix' | t }}"
+  data-currency-symbol="{{ cart.currency.symbol }}"
   x-data="
     {
       price: {{ variant_price }},
       days: {{ days }},
       prefix: $el.dataset.pricePerDayPrefix,
       suffix: $el.dataset.pricePerDaySuffix,
+      currencySymbol: $el.dataset.currencySymbol,
       get pricePerDay() {
-        return (this.price / 100 / this.days).toFixed(2).replace('.', ',') + '€';
+        return (this.price / 100 / this.days).toFixed(2).replace('.', ',') + this.currencySymbol;
       },
       get pricePerDayText() {
         return this.prefix + ' ' + this.pricePerDay + ' ' + this.suffix;

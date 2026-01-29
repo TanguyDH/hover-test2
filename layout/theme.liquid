@@ -365,6 +365,11 @@
         recipientFormCollapsed: `{{ 'recipient.form.collapsed' | t }}`,
         countrySelectorSearchCount: `{{ 'localization.country_results_count' | t: count: '[count]' }}`,
       };
+
+      window.Shopify = window.Shopify || {};
+      window.Shopify.currency = {
+        symbol: `{{ cart.currency.symbol }}`,
+      };
     </script>
 
     {%- if settings.predictive_search_enabled -%}
