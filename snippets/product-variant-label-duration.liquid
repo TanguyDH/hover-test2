@@ -25,15 +25,55 @@
 {%- liquid
   assign variant_price = 0
   assign option_index = option.position | minus: 1
-  assign first_char = value | slice: 0, 1
-  assign months = first_char | plus: 0
+
+  comment
+    Extraction robuste du nombre de mois depuis la valeur
+    Supporte: "1 mois", "3 mois", "12 mois", "1M", etc.
+  endcomment
+  assign value_string = value | downcase | strip
+  assign months = 0
+
+  comment
+    Essayer d'extraire le nombre depuis le début de la chaîne
+  endcomment
+  assign value_parts = value_string | split: ' '
+  assign first_part = value_parts[0]
+  assign months = first_part | plus: 0
+
+  comment
+    Si échec, essayer le premier caractère comme fallback
+  endcomment
+  if months == 0
+    assign first_char = value | slice: 0, 1
+    assign months = first_char | plus: 0
+  endif
+
+  comment
+    Calcul des jours (30 jours par mois)
+  endcomment
   assign days = months | times: 30
-  for variant in product.variants
-    if variant.options[option_index] == value
-      assign variant_price = variant.price
-      break
-    endif
-  endfor
+
+  comment
+    Recherche optimisée du variant
+  endcomment
+  if value.variant
+    assign variant_price = value.variant.price
+  else
+    comment
+      Fallback: boucle pour trouver le variant correspondant
+    endcomment
+    for variant in product.variants
+      if variant.options[option_index] == value
+        assign variant_price = variant.price
+        break
+      endif
+    endfor
+  endif
+
+  comment
+    Formatage des données pour JavaScript
+  endcomment
+  assign locale = request.locale.iso_code | default: shop.locale | default: 'fr-FR'
 -%}
 
 <label
@@ -42,20 +82,16 @@
   data-price-per-day-prefix="{{ 'products.product.variant.price_per_day_prefix' | t }}"
   data-price-per-day-suffix="{{ 'products.product.variant.price_per_day_suffix' | t }}"
   data-currency-symbol="{{ cart.currency.symbol }}"
+  data-locale="{{ locale }}"
   x-data="
-    {
+    variantDurationLabel({
       price: {{ variant_price }},
       days: {{ days }},
       prefix: $el.dataset.pricePerDayPrefix,
       suffix: $el.dataset.pricePerDaySuffix,
       currencySymbol: $el.dataset.currencySymbol,
-      get pricePerDay() {
-        return (this.price / 100 / this.days).toFixed(2).replace('.', ',') + this.currencySymbol;
-      },
-      get pricePerDayText() {
-        return this.prefix + ' ' + this.pricePerDay + ' ' + this.suffix;
-      }
-    }
+      locale: $el.dataset.locale
+    })
   "
 >
   {%- if is_first -%}
@@ -76,3 +112,39 @@
   </span>
   {{ label_unavailable }}
 </label>
+
+<script>
+  /**
+   * Alpine.js data function pour les labels de durée de variant
+   * Utilise VariantDurationUtils pour le formatage internationalisé
+   */
+  function variantDurationLabel(config) {
+    return {
+      price: config.price,
+      days: config.days,
+      prefix: config.prefix,
+      suffix: config.suffix,
+      currencySymbol: config.currencySymbol,
+      locale: config.locale,
+
+      get pricePerDay() {
+        if (!window.VariantDurationUtils) {
+          // Fallback si le module n'est pas chargé
+          const pricePerDay = (this.price / 100 / this.days).toFixed(2);
+          return pricePerDay.replace('.', ',') + ' ' + this.currencySymbol;
+        }
+
+        return window.VariantDurationUtils.calculatePricePerDay(
+          this.price,
+          this.days,
+          this.currencySymbol,
+          this.locale
+        );
+      },
+
+      get pricePerDayText() {
+        return this.prefix + ' ' + this.pricePerDay + ' ' + this.suffix;
+      },
+    };
+  }
+</script>
