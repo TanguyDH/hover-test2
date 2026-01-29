@@ -1,0 +1,13 @@
+.delivery-message {
+    text-align: center;
+    margin-top: -1.5rem;
+    font-size: 1.2rem;
+}
+
+.delivery-message .delivery-message__in-stock {
+    font-weight: bold;
+}
+
+.delivery-message .delivery-message__date {
+    font-weight: bold;
+}

@@ -1,0 +1,42 @@
+{% comment %}
+  Renders delivery message with calculated delivery date.
+  Accepts:
+  - product: {Object} product object.
+  - section_id: {String} id of section to which this snippet belongs.
+
+  Usage:
+  {% render 'delivery-message', product: product, section_id: section.id %}
+{% endcomment %}
+
+{{ 'component-delivery-message.css' | asset_url | stylesheet_tag }}
+
+{%- if product != blank and product.selected_or_first_available_variant.available -%}
+  {%- assign delivery_days = product.metafields.custom.delivery_time_days.value -%}
+  {%- if delivery_days != blank -%}
+    {%- assign msg = 'products.product.delivery_message' | t: date: '[DATE]' -%}
+    {%- assign parts = msg | split: '[DATE]' -%}
+    {%- assign before_date = parts[0] | split: ',' -%}
+    <div
+      class="delivery-message"
+      x-data="
+        {
+          days: {{ delivery_days }},
+          date: '',
+          init() {
+            const check = () => {
+              if (window.DeliveryDateUtils?.calculateDeliveryDate) {
+                this.date = window.DeliveryDateUtils.calculateDeliveryDate(this.days) || '';
+              } else {
+                setTimeout(check, 50);
+              }
+            };
+            check();
+          }
+        }
+      "
+    >
+      <span class="delivery-message__in-stock">{{ before_date[0] }}</span>, {{ before_date[1] -}}
+      <span class="delivery-message__date" x-text="date"></span>
+    </div>
+  {%- endif -%}
+{%- endif -%}

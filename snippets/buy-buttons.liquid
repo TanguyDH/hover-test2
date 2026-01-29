@@ -111,6 +111,8 @@
         </div>
       {%- endform -%}
     </product-form>
+
+    {%- render 'delivery-message', product: product, section_id: section_id -%}
   {%- else -%}
     <div class="product-form">
       <div class="product-form__buttons form">

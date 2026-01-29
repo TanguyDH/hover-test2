@@ -171,6 +171,7 @@
       "sku": "SKU",
       "inventory_out_of_stock": "En rupture de stock",
       "inventory_out_of_stock_continue_selling": "En stock",
+      "delivery_message": "En stock, commandez maintenant et soyez livré le {{ date }}",
       "volume_pricing": {
         "title": "Tarification basée sur le volume",
         "note": "La tarification basée sur le volume est disponible",
