@@ -84,6 +84,13 @@
           class="product__info-container{% if section.settings.enable_sticky_info %} product__column-sticky{% endif %}"
         >
           {%- assign product_form_id = 'product-form-' | append: section.id -%}
+          {%- assign price_block = null -%}
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'price' -%}
+              {%- assign price_block = block -%}
+              {%- break -%}
+            {%- endif -%}
+          {%- endfor -%}
 
           {%- for block in section.blocks -%}
             {%- case block.type -%}
@@ -97,40 +104,41 @@
                   {{- block.settings.text -}}
                 </p>
               {%- when 'title' -%}
-                <div class="product__title" {{ block.shopify_attributes }}>
-                  <h1>{{ product.title | escape }}</h1>
-                  <a href="{{ product.url }}" class="product__title">
-                    <h2 class="h1">
-                      {{ product.title | escape }}
-                    </h2>
-                  </a>
+                <div class="product__title-wrapper" {{ block.shopify_attributes }}>
+                  <div class="product__title">
+                    <h1>{{ product.title | escape }}</h1>
+                    <a href="{{ product.url }}" class="product__title">
+                      <h2 class="h1">
+                        {{ product.title | escape }}
+                      </h2>
+                    </a>
+                  </div>
+                  {%- if price_block -%}
+                    <div
+                      class="product__title-price"
+                      id="price-{{ section.id }}"
+                      role="status"
+                      {{ price_block.shopify_attributes }}
+                    >
+                      {%- render 'price',
+                        product: product,
+                        use_variant: true,
+                        show_badges: true,
+                        price_class: 'price--large'
+                      -%}
+                    </div>
+                  {%- endif -%}
                 </div>
               {%- when 'price' -%}
-                <div id="price-{{ section.id }}" role="status" {{ block.shopify_attributes }}>
-                  {%- render 'price',
-                    product: product,
-                    use_variant: true,
-                    show_badges: true,
-                    price_class: 'price--large'
-                  -%}
-                </div>
+                {%- comment -%} Le prix est maintenant affiché dans le bloc title, on ne l'affiche plus ici mais on garde les éléments supplémentaires {%- endcomment -%}
                 {%- if product.quantity_price_breaks_configured? -%}
                   <div class="volume-pricing-note" id="Volume-Note-{{ section.id }}">
                     <span>{{ 'products.product.volume_pricing.note' | t }}</span>
                   </div>
                 {%- endif -%}
-                {%- if cart.taxes_included or cart.duties_included or shop.shipping_policy.body != blank -%}
+                {%- if shop.shipping_policy.body != blank -%}
                   <div class="product__tax caption rte">
-                    {%- if cart.duties_included and cart.taxes_included -%}
-                      {{ 'products.product.duties_and_taxes_included' | t }}
-                    {%- elsif cart.taxes_included -%}
-                      {{ 'products.product.taxes_included' | t }}
-                    {%- elsif cart.duties_included -%}
-                      {{ 'products.product.duties_included' | t }}
-                    {%- endif -%}
-                    {%- if shop.shipping_policy.body != blank -%}
-                      {{ 'products.product.shipping_policy_html' | t: link: shop.shipping_policy.url }}
-                    {%- endif -%}
+                    {{ 'products.product.shipping_policy_html' | t: link: shop.shipping_policy.url }}
                   </div>
                 {%- endif -%}
                 <div {{ block.shopify_attributes }}>

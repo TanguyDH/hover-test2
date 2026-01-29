@@ -240,17 +240,46 @@ a.product__text {
   text-transform: uppercase;
 }
 
+.product__title-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
 .product__title {
   word-break: break-word;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0;
+  flex: 1;
+  min-width: 0;
+  font-weight: 700;
 }
 
 .product__title>* {
   margin: 0;
+  font-weight: 700;
 }
 
 .product__title>a {
   display: none;
+}
+
+.product__title-price {
+  flex-shrink: 0;
+  margin-bottom: 0;
+  font-weight: 700;
+}
+
+.product__title-price .price-item {
+  font-weight: 700;
+}
+
+@media screen and (max-width: 749px) {
+  .product__title-wrapper {
+    gap: 1rem;
+  }
 }
 
 .product__title+.product__text.caption-with-letter-spacing {
