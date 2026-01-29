@@ -25,42 +25,75 @@
 {%- liquid
   assign variant_price = 0
   assign option_index = option.position | minus: 1
+  assign months = 0
+  assign days = 0
 
   comment
     Extraction robuste du nombre de mois depuis la valeur
-    Supporte: "1 mois", "3 mois", "12 mois", "1M", etc.
+    Supporte: "1 mois", "3 mois", "12 mois", "1M", "3M", "1 month", etc.
+    Validation du format avant calcul
   endcomment
   assign value_string = value | downcase | strip
-  assign months = 0
-
+  
   comment
-    Essayer d'extraire le nombre depuis le début de la chaîne
+    Méthode 1: Extraire le nombre depuis le début (format "1 mois", "3M", etc.)
+    On split par espace et on prend la première partie
   endcomment
   assign value_parts = value_string | split: ' '
   assign first_part = value_parts[0]
-  assign months = first_part | plus: 0
+  
+  comment
+    Nettoyer first_part pour enlever les lettres communes (ex: "1m" -> "1", "3mois" -> "3")
+    On essaie plusieurs patterns de remplacement
+  endcomment
+  assign cleaned_part = first_part | replace: 'm', '' | replace: 'mois', '' | replace: 'month', '' | replace: 'mo', '' | strip
+  assign months = cleaned_part | plus: 0
 
   comment
-    Si échec, essayer le premier caractère comme fallback
+    Méthode 2: Si échec, essayer d'extraire le premier caractère comme nombre
+    (fallback pour les formats simples comme "1", "3", "12")
   endcomment
-  if months == 0
-    assign first_char = value | slice: 0, 1
+  if months == 0 or months < 1
+    assign first_char = value_string | slice: 0, 1
     assign months = first_char | plus: 0
+    
+    comment
+      Si le premier caractère n'est pas un nombre, essayer les 2 premiers caractères
+      (pour gérer "12 mois" où on prend "12")
+    endcomment
+    if months == 0
+      assign first_two_chars = value_string | slice: 0, 2
+      assign months = first_two_chars | plus: 0
+    endif
   endif
 
   comment
-    Calcul des jours (30 jours par mois)
+    Validation: mois doit être entre 1 et 120 (10 ans max)
+    Si invalide, on met 0 pour éviter les calculs incorrects
   endcomment
-  assign days = months | times: 30
+  if months < 1 or months > 120
+    assign months = 0
+  endif
+
+  comment
+    Calcul des jours (30 jours par mois) seulement si mois valide
+  endcomment
+  if months > 0
+    assign days = months | times: 30
+  endif
 
   comment
     Recherche optimisée du variant
+    Priorité 1: value.variant (le plus rapide)
+    Priorité 2: Recherche directe par option_index si possible
+    Priorité 3: Boucle sur tous les variants (fallback)
   endcomment
   if value.variant
     assign variant_price = value.variant.price
   else
     comment
-      Fallback: boucle pour trouver le variant correspondant
+      Essayer de trouver le variant correspondant à cette valeur d'option
+      On cherche uniquement les variants qui ont cette valeur à la bonne position
     endcomment
     for variant in product.variants
       if variant.options[option_index] == value
@@ -72,6 +105,7 @@
 
   comment
     Formatage des données pour JavaScript
+    Utilisation de la locale pour l'internationalisation
   endcomment
   assign locale = request.locale.iso_code | default: shop.locale | default: 'fr-FR'
 -%}
@@ -112,39 +146,3 @@
   </span>
   {{ label_unavailable }}
 </label>
-
-<script>
-  /**
-   * Alpine.js data function pour les labels de durée de variant
-   * Utilise VariantDurationUtils pour le formatage internationalisé
-   */
-  function variantDurationLabel(config) {
-    return {
-      price: config.price,
-      days: config.days,
-      prefix: config.prefix,
-      suffix: config.suffix,
-      currencySymbol: config.currencySymbol,
-      locale: config.locale,
-
-      get pricePerDay() {
-        if (!window.VariantDurationUtils) {
-          // Fallback si le module n'est pas chargé
-          const pricePerDay = (this.price / 100 / this.days).toFixed(2);
-          return pricePerDay.replace('.', ',') + ' ' + this.currencySymbol;
-        }
-
-        return window.VariantDurationUtils.calculatePricePerDay(
-          this.price,
-          this.days,
-          this.currencySymbol,
-          this.locale
-        );
-      },
-
-      get pricePerDayText() {
-        return this.prefix + ' ' + this.pricePerDay + ' ' + this.suffix;
-      },
-    };
-  }
-</script>
