@@ -167,7 +167,7 @@ product-info {
   flex: 0 0 100%;
   padding: 0;
   margin: 0 0 1.2rem 0;
-  max-width: 44rem;
+  max-width: 100%;
   min-width: fit-content;
   border: none;
 }
@@ -329,6 +329,7 @@ a.product__text {
   font-weight: 600;
 }
 
+
 .product--no-media .product__title,
 .product--no-media .product__text,
 .product--no-media .product__tax,
@@ -388,7 +389,7 @@ a.product__text {
 }
 
 .product-form__buttons {
-  max-width: 44rem;
+  max-width: 100%;
 }
 
 .product--no-media .product__info-container>modal-opener {
@@ -1435,7 +1436,7 @@ a.product__text {
 
   display: block;
   position: relative;
-  max-width: 44rem;
+  max-width: 100%;
   margin-bottom: 2.5rem;
 }
 
