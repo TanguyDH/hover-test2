@@ -14,6 +14,7 @@
   {{ 'component-price.css' | asset_url | stylesheet_tag }}
   {{ 'component-slider.css' | asset_url | stylesheet_tag }}
   {{ 'component-rating.css' | asset_url | stylesheet_tag }}
+  {{ 'component-trustpilot-rating.css' | asset_url | stylesheet_tag }}
   {{ 'component-deferred-media.css' | asset_url | stylesheet_tag }}
 
   {% unless product.has_only_default_variant %}
@@ -104,6 +105,8 @@
                 >
                   {{- block.settings.text -}}
                 </p>
+              {%- when 'trustpilot_rating' -%}
+                {% render 'trustpilot-rating', block: block %}
               {%- when 'title' -%}
                 <div class="product__title-wrapper" {{ block.shopify_attributes }}>
                   <div class="product__title">
@@ -785,6 +788,34 @@
           ],
           "default": "body",
           "label": "t:sections.main-product.blocks.text.settings.text_style.label"
+        }
+      ]
+    },
+    {
+      "type": "trustpilot_rating",
+      "name": "Trustpilot Rating",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Excellent"
+        },
+        {
+          "type": "image_picker",
+          "id": "stars_image",
+          "label": "Stars Image"
+        },
+        {
+          "type": "text",
+          "id": "reviews_count",
+          "label": "Reviews Count",
+          "default": "17.102"
+        },
+        {
+          "type": "image_picker",
+          "id": "logo",
+          "label": "Logo"
         }
       ]
     },

@@ -1,0 +1,39 @@
+{% comment %}
+  Renders Trustpilot rating block.
+  Accepts:
+  - block: {Object} passing the block information.
+
+  Usage:
+  {% render 'trustpilot-rating', block: block %}
+{% endcomment %}
+<div class="trustpilot-rating-block" {{ block.shopify_attributes }}>
+  {%- if block.settings.title != blank -%}
+    <span class="trustpilot-rating__title">{{ block.settings.title }}</span>
+  {%- endif -%}
+  {%- if block.settings.stars_image != blank -%}
+    <img
+      src="{{ block.settings.stars_image | image_url }}"
+      alt="Rating stars"
+      class="trustpilot-rating__image"
+      width="{{ block.settings.stars_image.width }}"
+      height="{{ block.settings.stars_image.height }}"
+      loading="lazy"
+    >
+  {%- endif -%}
+  {%- if block.settings.reviews_count != blank -%}
+    <span class="trustpilot-rating__reviews-wrapper">
+      <span class="trustpilot-rating__text">{{ block.settings.reviews_count }}</span>
+      <span class="trustpilot-rating__text">avis</span>
+    </span>
+  {%- endif -%}
+  {%- if block.settings.logo != blank -%}
+    <img
+      src="{{ block.settings.logo | image_url }}"
+      alt="Trustpilot logo"
+      class="trustpilot-rating__image"
+      width="{{ block.settings.logo.width }}"
+      height="{{ block.settings.logo.height }}"
+      loading="lazy"
+    >
+  {%- endif -%}
+</div>
