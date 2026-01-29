@@ -23,7 +23,7 @@
   {%- if block.settings.reviews_count != blank -%}
     <span class="trustpilot-rating__reviews-wrapper">
       <span class="trustpilot-rating__text">{{ block.settings.reviews_count }}</span>
-      <span class="trustpilot-rating__text">avis</span>
+      <span class="trustpilot-rating__text">{{ 'trustpilot.reviews' | t }}</span>
     </span>
   {%- endif -%}
   {%- if block.settings.logo != blank -%}

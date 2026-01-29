@@ -110,27 +110,36 @@
       <label
         for="{{ input_id }}"
         class="variant-card-label"
+        data-price-per-day-prefix="{{ 'products.product.variant.price_per_day_prefix' | t }}"
+        data-price-per-day-suffix="{{ 'products.product.variant.price_per_day_suffix' | t }}"
         x-data="
           {
             price: {{ variant_price }},
             days: {{ days }},
+            prefix: $el.dataset.pricePerDayPrefix,
+            suffix: $el.dataset.pricePerDaySuffix,
             get pricePerDay() {
               return (this.price / 100 / this.days).toFixed(2).replace('.', ',') + '€';
+            },
+            get pricePerDayText() {
+              return this.prefix + ' ' + this.pricePerDay + ' ' + this.suffix;
             }
           }
         "
       >
         {%- if forloop.first -%}
-          <span class="variant-badge variant-badge--discovery">Découverte</span>
+          <span class="variant-badge variant-badge--discovery">
+            {{- 'products.product.variant.discovery_badge' | t -}}
+          </span>
         {%- else -%}
-          <span class="variant-badge variant-badge--best">Meilleure offre</span>
+          <span class="variant-badge variant-badge--best">{{ 'products.product.variant.best_offer_badge' | t }}</span>
         {%- endif -%}
         <span class="variant-main-text">{{ value }}</span>
         <span class="variant-sub-text-wrapper">
           {%- unless forloop.first -%}
-            <span class="variant-discount-badge">-10%</span>
+            <span class="variant-discount-badge">{{ 'products.product.variant.discount_badge' | t }}</span>
           {%- endunless -%}
-          <span class="variant-sub-text" x-text="'Soit ' + pricePerDay + ' / jour'"></span>
+          <span class="variant-sub-text" x-text="pricePerDayText"></span>
         </span>
         {{ label_unavailable }}
       </label>

@@ -80,6 +80,9 @@
     "collapsible_content_title": "Contenu réductible",
     "complementary_products": "Produits complémentaires"
   },
+  "trustpilot": {
+    "reviews": "avis"
+  },
   "blogs": {
     "article": {
       "blog": "Blog",
@@ -181,7 +184,14 @@
       },
       "taxes_included": "Taxes incluses.",
       "duties_included": "Frais de douane inclus.",
-      "duties_and_taxes_included": "Frais de douane et taxes inclus."
+      "duties_and_taxes_included": "Frais de douane et taxes inclus.",
+      "variant": {
+        "discovery_badge": "Découverte",
+        "best_offer_badge": "Meilleure offre",
+        "price_per_day_prefix": "Soit",
+        "price_per_day_suffix": "/ jour",
+        "discount_badge": "-10%"
+      }
     },
     "modal": {
       "label": "Galerie de supports multimédias"
