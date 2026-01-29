@@ -66,8 +66,7 @@
       {{ label_unavailable }}
     {%- endcapture -%}
 
-    {%
-      render 'swatch-input',
+    {% render 'swatch-input',
       id: input_id,
       name: input_name,
       value: escaped_value,
@@ -94,10 +93,53 @@
       {% endif %}
       {{ input_dataset }}
     >
-    <label for="{{ input_id }}">
-      {{ value -}}
-      {{ label_unavailable }}
-    </label>
+    {%- if option.name == 'Durée' -%}
+      {%- liquid
+        assign variant_price = 0
+        assign option_index = option.position | minus: 1
+        assign first_char = value | slice: 0, 1
+        assign months = first_char | plus: 0
+        assign days = months | times: 30
+        for variant in product.variants
+          if variant.options[option_index] == value
+            assign variant_price = variant.price
+            break
+          endif
+        endfor
+      -%}
+      <label
+        for="{{ input_id }}"
+        class="variant-card-label"
+        x-data="
+          {
+            price: {{ variant_price }},
+            days: {{ days }},
+            get pricePerDay() {
+              return (this.price / 100 / this.days).toFixed(2).replace('.', ',') + '€';
+            }
+          }
+        "
+      >
+        {%- if forloop.first -%}
+          <span class="variant-badge variant-badge--discovery">Découverte</span>
+        {%- else -%}
+          <span class="variant-badge variant-badge--best">Meilleure offre</span>
+        {%- endif -%}
+        <span class="variant-main-text">{{ value }}</span>
+        <span class="variant-sub-text-wrapper">
+          {%- unless forloop.first -%}
+            <span class="variant-discount-badge">-10%</span>
+          {%- endunless -%}
+          <span class="variant-sub-text" x-text="'Soit ' + pricePerDay + ' / jour'"></span>
+        </span>
+        {{ label_unavailable }}
+      </label>
+    {%- else -%}
+      <label for="{{ input_id }}">
+        {{ value -}}
+        {{ label_unavailable }}
+      </label>
+    {%- endif -%}
   {%- elsif picker_type == 'dropdown' or picker_type == 'swatch_dropdown' -%}
     <option
       id="{{ input_id }}"
