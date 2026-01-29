@@ -434,36 +434,113 @@ a.product__text {
 }
 
 @media screen and (max-width: 749px) {
+
+  /* Enlever le padding-top de la section en mobile */
+  product-info[class*="section-"] {
+    padding-top: 0 !important;
+  }
+
+  /* Sortir la galerie du conteneur page-width en mobile */
+  .page-width .product__media-wrapper {
+    margin-left: calc(-50vw + 50%) !important;
+    margin-right: calc(-50vw + 50%) !important;
+    padding: 0 !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin-top: 0 !important;
+  }
+
   .product__media-list {
-    margin-left: -2.5rem;
-    margin-bottom: 3rem;
-    width: calc(100% + 4rem);
+    margin: 0;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    padding: 0 !important;
+    padding-left: 0 !important;
+    padding-bottom: 1.2rem !important;
+    overflow-x: scroll !important;
+    overflow-y: hidden;
+    scroll-padding-left: 0 !important;
+    -ms-overflow-style: scrollbar !important;
+    scrollbar-width: auto !important;
+    scrollbar-color: rgb(var(--color-foreground)) rgba(128, 128, 128, 0.3) !important;
+    /* Force l'affichage permanent de la scrollbar */
+    scrollbar-gutter: stable;
+  }
+
+  .product__media-wrapper {
+    padding: 0 !important;
   }
 
   .product__media-wrapper slider-component:not(.thumbnail-slider--no-slide) {
-    margin-left: -1.5rem;
-    margin-right: -1.5rem;
+    margin: 0;
+    padding: 0;
   }
 
   .slider.product__media-list::-webkit-scrollbar {
-    height: 0.2rem;
-    width: 0.2rem;
+    height: 1.2rem !important;
+    display: block !important;
   }
 
   .product__media-list::-webkit-scrollbar-thumb {
-    background-color: rgb(var(--color-foreground));
+    background-color: rgb(var(--color-foreground)) !important;
+    border-radius: 0.6rem;
   }
 
   .product__media-list::-webkit-scrollbar-track {
-    background-color: rgba(var(--color-foreground), 0.2);
+    background-color: rgba(128, 128, 128, 0.3) !important;
+    border-radius: 0.6rem;
   }
 
   .product__media-list .product__media-item {
-    width: calc(100% - 3rem - var(--grid-mobile-horizontal-spacing));
+    width: 90%;
+    flex-shrink: 0;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .product__media-list .product__media-item:first-child {
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+  }
+
+  .product__media-list .product__media-item .product-media-container {
+    height: 330px !important;
+    width: 100% !important;
+    padding: 0 !important;
+    overflow: hidden;
+  }
+
+  .product__media-list .product__media-item .product-media-container .media {
+    height: 330px !important;
+    width: 100% !important;
+    padding: 0 !important;
+    overflow: hidden;
+  }
+
+  .product__media-list .product__media-item .product-media-container .media>img,
+  .product__media-list .product__media-item .product-media-container .media>video,
+  .product__media-list .product__media-item .product-media-container .media>iframe,
+  .product__media-list .product__media-item .product-media-container .media>model-viewer {
+    width: 100% !important;
+    height: 330px !important;
+    object-fit: cover !important;
+    object-position: top;
+    display: block;
   }
 
   .product--mobile-columns .product__media-item {
     width: calc(50% - 1.5rem - var(--grid-mobile-horizontal-spacing));
+  }
+
+  /* Cacher les boutons de contrôle sur mobile */
+  .product__media-wrapper .slider-mobile-gutter .slider-buttons {
+    display: none !important;
+  }
+
+  /* Cacher les icônes de zoom/agrandissement sur mobile */
+  .product__media-icon,
+  .product__modal-opener--image .product__media-icon {
+    display: none !important;
   }
 }
 
