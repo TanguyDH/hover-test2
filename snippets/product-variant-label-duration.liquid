@@ -1,0 +1,72 @@
+{% comment %}
+  Renders a special label for duration variant options with badges and price per day calculation.
+
+  Accepts:
+  - input_id: {String} ID of the input element
+  - value: {Object} Current option value
+  - option: {Object} Current product option
+  - product: {Object} Product object
+  - label_unavailable: {String} HTML for unavailable label
+  - is_first: {Boolean} Whether this is the first option value
+
+  Usage:
+  {% render 'product-variant-label-duration',
+    input_id: input_id,
+    value: value,
+    option: option,
+    product: product,
+    label_unavailable: label_unavailable,
+    is_first: forloop.first
+  %}
+{% endcomment %}
+
+{%- liquid
+  assign variant_price = 0
+  assign option_index = option.position | minus: 1
+  assign first_char = value | slice: 0, 1
+  assign months = first_char | plus: 0
+  assign days = months | times: 30
+  for variant in product.variants
+    if variant.options[option_index] == value
+      assign variant_price = variant.price
+      break
+    endif
+  endfor
+-%}
+
+<label
+  for="{{ input_id }}"
+  class="variant-card-label"
+  data-price-per-day-prefix="{{ 'products.product.variant.price_per_day_prefix' | t }}"
+  data-price-per-day-suffix="{{ 'products.product.variant.price_per_day_suffix' | t }}"
+  x-data="
+    {
+      price: {{ variant_price }},
+      days: {{ days }},
+      prefix: $el.dataset.pricePerDayPrefix,
+      suffix: $el.dataset.pricePerDaySuffix,
+      get pricePerDay() {
+        return (this.price / 100 / this.days).toFixed(2).replace('.', ',') + '€';
+      },
+      get pricePerDayText() {
+        return this.prefix + ' ' + this.pricePerDay + ' ' + this.suffix;
+      }
+    }
+  "
+>
+  {%- if is_first -%}
+    <span class="variant-badge variant-badge--discovery">
+      {{- 'products.product.variant.discovery_badge' | t -}}
+    </span>
+  {%- else -%}
+    <span class="variant-badge variant-badge--best">{{ 'products.product.variant.best_offer_badge' | t }}</span>
+  {%- endif -%}
+  <span class="variant-main-text">{{ value }}</span>
+  <span class="variant-sub-text-wrapper">
+    {%- unless is_first -%}
+      <span class="variant-discount-badge">{{ 'products.product.variant.discount_badge' | t }}</span>
+    {%- endunless -%}
+    <span class="variant-sub-text" x-text="pricePerDayText"></span>
+  </span>
+  {{ label_unavailable }}
+</label>

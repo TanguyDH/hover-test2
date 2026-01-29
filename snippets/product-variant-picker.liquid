@@ -44,7 +44,7 @@
         </fieldset>
       {%- elsif picker_type == 'button' -%}
         <fieldset class="js product-form__input product-form__input--pill">
-          {%- if option.name == 'Durée' -%}
+          {%- if block.settings.special_option_name != blank and option.name == block.settings.special_option_name -%}
             <legend class="form__label" style="display: none;">{{ option.name }}</legend>
           {%- else -%}
             <legend class="form__label">{{ option.name }}</legend>
