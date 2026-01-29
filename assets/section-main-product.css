@@ -309,7 +309,12 @@ a.product__text {
 }
 
 .product__accordion .accordion__content {
-  padding: 0 1rem;
+  padding: 0 1rem 0 0;
+}
+
+.product__accordion .accordion__content.rte ul,
+.product__accordion .accordion__content.rte ol {
+  padding-left: 0;
 }
 
 .product .price .badge {
