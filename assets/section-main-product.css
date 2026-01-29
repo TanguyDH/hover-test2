@@ -1398,6 +1398,36 @@ a.product__text {
   }
 }
 
+/* Product description list items with check icons */
+.product__description ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.product__description li {
+  position: relative;
+  padding-left: 1.9rem;
+  list-style: none;
+  line-height: 1.6;
+}
+
+.product__description p {
+  line-height: 1.4;
+}
+
+.product__description li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.55rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  background-image: url("data:image/svg+xml,%3Csvg width='45' height='45' viewBox='0 0 45 45' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 24L18 30L33 15' stroke='%23171714' stroke-width='3.21429' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
 /* Recipient form */
 .recipient-form {
   /* (2.88[line-height] - 1.6rem) / 2 */
