@@ -44,50 +44,6 @@ window.VariantDurationUtils = {
       const separator = (locale || 'fr-FR').startsWith('fr') ? ',' : '.';
       return formatted.replace('.', separator) + ' ' + (currencySymbol || '€');
     }
-  },
-
-  /**
-   * Extrait le nombre de mois depuis une valeur de variant
-   * Supporte plusieurs formats : "1 mois", "3 mois", "12 mois", "1M", "3M", etc.
-   * @param {string} value - Valeur du variant (ex: "1 mois", "3M")
-   * @returns {number} Nombre de mois extrait, ou 0 si non trouvé
-   */
-  extractMonthsFromValue(value) {
-    if (!value || typeof value !== 'string') {
-      return 0;
-    }
-
-    const normalized = value.trim().toLowerCase();
-    
-    // Patterns de recherche pour différents formats
-    const patterns = [
-      /^(\d+)\s*mois/i,           // "1 mois", "3 mois"
-      /^(\d+)\s*m\b/i,             // "1m", "3M", "12 m"
-      /^(\d+)\s*month/i,            // "1 month", "3 months"
-      /^(\d+)\s*mo\b/i,             // "1mo", "3MO"
-      /^(\d+)/,                     // "1", "3", "12" (fallback)
-    ];
-
-    for (const pattern of patterns) {
-      const match = normalized.match(pattern);
-      if (match && match[1]) {
-        const months = parseInt(match[1], 10);
-        if (months > 0 && months <= 120) { // Validation raisonnable (max 10 ans)
-          return months;
-        }
-      }
-    }
-
-    return 0;
-  },
-
-  /**
-   * Calcule le nombre de jours à partir du nombre de mois
-   * @param {number} months - Nombre de mois
-   * @returns {number} Nombre de jours (30 jours par mois)
-   */
-  calculateDaysFromMonths(months) {
-    return months * 30;
   }
 };
 
