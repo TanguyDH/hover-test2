@@ -186,6 +186,24 @@ product-info {
 
 .product-form__submit {
   margin-bottom: 1rem;
+  border-radius: 3rem !important;
+  font-weight: 700;
+  padding: 1.6rem 3.5rem !important;
+}
+
+.product-form__submit span {
+  font-weight: 700;
+}
+
+.product-form__submit:before,
+.product-form__submit:after {
+  border-radius: 3rem !important;
+}
+
+.product-form__submit:after {
+  --border-offset: 0px;
+  box-shadow: 0 0 0 calc(var(--buttons-border-width) + var(--border-offset)) rgba(var(--color-button-text), var(--border-opacity)),
+    0 0 0 var(--buttons-border-width) rgba(var(--color-button), var(--alpha-button-background)) !important;
 }
 
 .product-form__submit[aria-disabled='true']+.shopify-payment-button .shopify-payment-button__button[disabled],

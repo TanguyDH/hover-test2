@@ -130,7 +130,13 @@ if (!customElements.get('product-form')) {
           if (text) this.submitButtonText.textContent = text;
         } else {
           this.submitButton.removeAttribute('disabled');
-          this.submitButtonText.textContent = window.variantStrings.addToCart;
+          // Préserver le span du prix si présent (géré par Alpine.js)
+          const priceSpan = this.submitButtonText.querySelector('.product-form__submit-price');
+          if (priceSpan) {
+            this.submitButtonText.innerHTML = window.variantStrings.addToCart + priceSpan.outerHTML;
+          } else {
+            this.submitButtonText.textContent = window.variantStrings.addToCart;
+          }
         }
       }
 

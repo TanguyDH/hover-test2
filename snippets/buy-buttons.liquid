@@ -89,6 +89,18 @@
                 {{ 'products.product.sold_out' | t }}
               {%- else -%}
                 {{ 'products.product.add_to_cart' | t }}
+                <span
+                  class="product-form__submit-price"
+                  x-init="
+                    if (window.PriceUtils) {
+                      window.PriceUtils.observePriceAndUpdate('#price-{{ section.id }}', $el, ' | ');
+                    }
+                  "
+                >
+                  {%- if product.selected_or_first_available_variant.price -%}
+                    | {{ product.selected_or_first_available_variant.price | money -}}
+                  {%- endif -%}
+                </span>
               {%- endif -%}
             </span>
             {%- render 'loading-spinner' -%}
