@@ -100,7 +100,8 @@
         option: option,
         product: product,
         label_unavailable: label_unavailable,
-        is_first: forloop.first
+        is_first: forloop.first,
+        discount_percentage: block.settings.discount_percentage
       %}
     {%- else -%}
       <label for="{{ input_id }}">

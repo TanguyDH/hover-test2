@@ -8,6 +8,7 @@
   - product: {Object} Product object
   - label_unavailable: {String} HTML for unavailable label
   - is_first: {Boolean} Whether this is the first option value
+  - discount_percentage: {String} Discount percentage to display (e.g. "10" for 10%)
 
   Usage:
   {% render 'product-variant-label-duration',
@@ -16,7 +17,8 @@
     option: option,
     product: product,
     label_unavailable: label_unavailable,
-    is_first: forloop.first
+    is_first: forloop.first,
+    discount_percentage: block.settings.discount_percentage
   %}
 {% endcomment %}
 
@@ -64,7 +66,9 @@
   <span class="variant-main-text">{{ value }}</span>
   <span class="variant-sub-text-wrapper">
     {%- unless is_first -%}
-      <span class="variant-discount-badge">{{ 'products.product.variant.discount_badge' | t }}</span>
+      {%- if discount_percentage != blank -%}
+        <span class="variant-discount-badge">-{{ discount_percentage }}%</span>
+      {%- endif -%}
     {%- endunless -%}
     <span class="variant-sub-text" x-text="pricePerDayText"></span>
   </span>
